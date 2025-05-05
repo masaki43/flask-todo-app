@@ -18,14 +18,21 @@ class Post(db.Model):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
-        posts = Post.query.order_by(Post.due). all()
+        posts = Post.query.order_by(Post.due).all()
         return render_template('index.html', posts=posts, today=date.today())
     else:
         title = request.form.get('title')
         detail = request.form.get('detail')
         due = request.form.get('due')
 
-        due = datetime.strptime(due, '%Y-%m-%d')
+        if not due:
+            return "エラー：日付が空です。戻って入力してください。", 400
+
+        try:
+            due = datetime.strptime(due, '%Y-%m-%d')
+        except ValueError:
+            return "エラー：日付の形式が正しくありません。", 400
+
         new_post = Post(title=title, detail=detail, due=due)
 
         db.session.add(new_post)
@@ -57,7 +64,7 @@ def update(id):
 
 
 @app.route('/delete/<int:id>',)
-def deleate(id):
+def delete(id):
     post = Post.query.get(id)
 
     db.session.delete(post)
