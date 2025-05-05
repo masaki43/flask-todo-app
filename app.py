@@ -1,5 +1,6 @@
 from datetime import datetime,date
 
+
 from flask import Flask, render_template,request ,redirect, url_for
 from flask_sqlalchemy import SQLAlchemy 
 
@@ -62,6 +63,10 @@ def deleate(id):
     db.session.delete(post)
     db.session.commit()
     return redirect('/')
+
+with app.app_context():
+    db.create_all()
+
 
 if __name__ == '__main__':
     app.run()
